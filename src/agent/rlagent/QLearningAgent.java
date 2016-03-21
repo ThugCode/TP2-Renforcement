@@ -14,7 +14,7 @@ import environnement.Etat;
 
 /**
  * 
- * @author GERLAND - LETOURNEUR
+ * @author LETOURNEUR - GERLAND
  *
  */
 public class QLearningAgent extends RLAgent{
@@ -93,7 +93,7 @@ public class QLearningAgent extends RLAgent{
 	 */
 	@Override
 	public double getQValeur(Etat e, Action a) {
-		
+		//Traitement important dans cette classe déplacer depuis getPolitique
 		if(this.Q_Values.get(e) == null || this.Q_Values.get(e).get(a) == null)
 			return 0.0;
 		

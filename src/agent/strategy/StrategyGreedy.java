@@ -1,5 +1,6 @@
 package agent.strategy;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -14,17 +15,15 @@ import environnement.gridworld.ActionGridworld;
  *
  */
 public class StrategyGreedy extends StrategyExploration{
-	//TODO
-	//...
 	
-	private Random rand=new Random();
+	protected double epsilon;
 	
-	
+	private Random rand = new Random();
 	
 	public StrategyGreedy(RLAgent agent,double epsilon) {
 		super(agent);
-		//TODO
-		//...
+		
+		this.setEpsilon(epsilon);
 	}
 
 	/**
@@ -32,21 +31,21 @@ public class StrategyGreedy extends StrategyExploration{
 	 */
 	@Override
 	public Action getAction(Etat _e) {
-		//VOTRE CODE
+		
 		//getAction renvoi null si _e absorbant
+		//if(_e.indice() != 0)
+		//	return null;
 		
+		ArrayList<Action> liste = (ArrayList<Action>) this.agent.getPolitique(_e);
+		if(liste.size() == 0)
+			return null;
 		
-		return null;
-		
+		int i = rand.nextInt(liste.size());
+        return liste.get(i);
 	}
-
-
 
 	public void setEpsilon(double epsilon) {
-		//VOTRE CODE
-		
+		this.epsilon = epsilon;
 	}
-
-
 
 }
