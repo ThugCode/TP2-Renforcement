@@ -32,12 +32,13 @@ public class StrategyGreedy extends StrategyExploration{
 	@Override
 	public Action getAction(Etat _e) {
 		
-		//getAction renvoi null si _e absorbant
-		//if(_e.indice() != 0)
-		//	return null;
+		if(rand.nextDouble() < epsilon) {
+			List<Action> actions = this.getAgent().getActionsLegales(_e);
+			return actions.get(rand.nextInt(actions.size()));
+		}
 		
 		ArrayList<Action> liste = (ArrayList<Action>) this.agent.getPolitique(_e);
-		if(liste.size() == 0)
+		if(liste.size() <= 0)
 			return null;
 		
 		int i = rand.nextInt(liste.size());

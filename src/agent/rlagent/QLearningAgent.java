@@ -2,10 +2,7 @@ package agent.rlagent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import java.util.Map.Entry;
 
 import environnement.Action;
@@ -43,26 +40,18 @@ public class QLearningAgent extends RLAgent{
 	@Override
 	public List<Action> getPolitique(Etat e) {
 		
-		Double maxValue = Double.MIN_VALUE;
+		Double maxValue = this.getValeur(e);
+		
 		ArrayList<Action> liste = new ArrayList<Action>();
 		
-		if(this.Q_Values.get(e) == null)
-			return liste;
+		HashMap <Action, Double> actions = this.Q_Values.get(e);
 		
-		Iterator<Entry<Action, Double>> iterator = this.Q_Values.get(e).entrySet().iterator();
-	    while (iterator.hasNext()) {
-	    	
-	        Map.Entry<Action, Double> pair = (Map.Entry<Action, Double>)iterator.next();
-	        
-	        if(maxValue<pair.getValue()) {
-	        	maxValue = pair.getValue();
-	        	liste.clear();
-	        	liste.add(pair.getKey());
-	        }
-	        
-	        if(maxValue==pair.getValue()) {
-	        	liste.add(pair.getKey());
-	        }
+	    if(actions != null) {
+	    	actions.entrySet().stream().forEach((pair) -> {
+		        if(maxValue==pair.getValue()) {
+		        	liste.add(pair.getKey());
+		        }
+	    	});
 	    }
 	    
 		return liste;
@@ -74,15 +63,14 @@ public class QLearningAgent extends RLAgent{
 	@Override
 	public double getValeur(Etat e) {
 		
-		ArrayList<Action> liste = (ArrayList<Action>) getPolitique(e);
-		if(liste.size() == 1)
-			return this.Q_Values.get(e).get(liste.get(0));
-		else if(liste.size() > 1) {
-			int i = new Random().nextInt(liste.size());
-            return this.Q_Values.get(e).get(liste.get(i));
-		}
+		if(!this.Q_Values.containsKey(e))
+			return 0.0;
 		
-		return 0.0;
+		Double max = Double.MIN_VALUE;
+		for(Entry<Action, Double> ad : this.Q_Values.get(e).entrySet()) {
+			max = Math.max(max, ad.getValue());
+		}
+		return max;
 	}
 
 	/**
@@ -93,8 +81,7 @@ public class QLearningAgent extends RLAgent{
 	 */
 	@Override
 	public double getQValeur(Etat e, Action a) {
-		//Traitement important dans cette classe déplacer depuis getPolitique
-		if(this.Q_Values.get(e) == null || this.Q_Values.get(e).get(a) == null)
+		if(!this.Q_Values.containsKey(e) || !this.Q_Values.get(e).containsKey(a))
 			return 0.0;
 		
 		return this.Q_Values.get(e).get(a);
@@ -106,21 +93,17 @@ public class QLearningAgent extends RLAgent{
 	@Override
 	public void setQValeur(Etat e, Action a, double d) {
 		
-		HashMap<Action, Double> temp = new HashMap<Action, Double>();
-		temp.put(a, d);
+		HashMap<Action, Double> temp = new HashMap<Action, Double>();		
+		if(this.Q_Values.containsKey(e)) {
+			temp = this.Q_Values.get(e);
+		}
 		
-		if(this.Q_Values.get(e) != null) {
-			this.Q_Values.get(e).put(a, d);
-			this.Q_Values.replace(e, this.Q_Values.get(e));
-		}
-		else {
-			this.Q_Values.put(e, temp);
-		}
+		temp.put(a, d);
+		this.Q_Values.put(e, temp);
 		
 		//mise a jour vmin et vmax pour affichage gradient de couleur
-        Double value = this.Q_Values.get(e).get(a);
-    	vmax = Math.max(value, vmax);
-    	vmin = Math.min(value, vmin);
+    	vmax = Math.max(d, vmax);
+    	vmin = Math.min(d, vmin);
 		
 		this.notifyObs();
 	}
@@ -155,9 +138,9 @@ public class QLearningAgent extends RLAgent{
 	@Override
 	public void reset() {
 		super.reset();
-		this.episodeNb =0;
+		this.episodeNb = 0;
 
-		this.vmax = 0;
+		this.vmax = Integer.MIN_VALUE;
         this.vmin = Integer.MAX_VALUE;
 		this.Q_Values = new HashMap<Etat, HashMap<Action, Double>>();
 		
