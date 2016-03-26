@@ -1,16 +1,11 @@
 package simu;
 
-
-
 import javax.swing.SwingUtilities;
 
 import vueCrawler.VueCrawlerAbstrait;
 import vueCrawler.VueCrawlerManuel;
-import vueGridworld.VueGridworldManuel;
 import environnement.crawler.CrawlingRobot;
 import environnement.crawler.CrawlingRobotEnvironnement;
-import environnement.gridworld.GridworldEnvironnement;
-import environnement.gridworld.GridworldMDP;
 
 public class testMoveCrawler {
 	/**

@@ -25,11 +25,7 @@ public class testQLAgentCrawler {
 			
 			CrawlingRobotEnvironnement g = new CrawlingRobotEnvironnement(nbEtatBras,nbEtatMain);
 			
-			int nbA=4;
-			int nbS = nbEtatBras*nbEtatMain;
-			
 			RLAgent a = new QLearningAgent(alpha,gamma,g);
-			//RLAgent a = new QLearningAgent(alpha,gamma,g,nbS,nbA);
 			
 			a.setStratExplorationGreedy(0.1);//sinon strat exploration par defaut est manuelle
 			

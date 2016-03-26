@@ -22,11 +22,7 @@ public class testQLAgentGridworld {
 					gmdp.setProba(0.1);
 					double gamma=0.9;
 					double alpha=0.1;
-					int nbA=5;
-					int nbS = gmdp.getNbEtats();
 					
-					
-					//RLAgent a = new QLearningAgent(alpha,gamma,g,nbS,nbA);//si utilise tableau pour Qvaleurs 
 					RLAgent a = new QLearningAgent(alpha,gamma,g);
 					a.DISPEPISODE = true;
 					VueGridworldRL vue = new VueGridworldRL(g,a);			

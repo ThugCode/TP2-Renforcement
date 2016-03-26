@@ -16,6 +16,9 @@ import environnement.Etat;
  */
 public class QLearningAgent extends RLAgent{
 	
+	/**
+	 * Matrice des valeurs Q
+	 */
 	protected HashMap<Etat, HashMap<Action, Double>> Q_Values;
 	
 	/**
@@ -24,28 +27,29 @@ public class QLearningAgent extends RLAgent{
 	 * @param gamma
 	 * @param Environnement
 	 */
-	public QLearningAgent(double alpha, double gamma,
-			Environnement _env) {
+	public QLearningAgent(double alpha, double gamma, Environnement _env) {
 		
 		super(alpha, gamma, _env);
-		
 		this.reset();
 	}
 	
 	/**
-	 * renvoi la (les) action(s) de plus forte(s) valeur(s) dans l'etat e
+	 * Renvoi la (les) action(s) de plus forte(s) valeur(s) dans l'etat e
 	 *  
-	 *  renvoi liste vide si aucunes actions possibles dans l'etat 
+	 *  @param Etat e
+	 *  @return liste Liste d'actions (vide si aucune action possible dans l'etat) 
 	 */
 	@Override
 	public List<Action> getPolitique(Etat e) {
 		
-		Double maxValue = this.getValeur(e);
-		
 		ArrayList<Action> liste = new ArrayList<Action>();
 		
-		HashMap <Action, Double> actions = this.Q_Values.get(e);
+		//Récupération de la valeur maximum
+		Double maxValue = this.getValeur(e);
 		
+		//Parcours de actions de l'état, si la valeur de l'action 
+		//est égale à la valeur max, on ajoute l'action à la liste
+		HashMap <Action, Double> actions = this.Q_Values.get(e);
 	    if(actions != null) {
 	    	actions.entrySet().stream().forEach((pair) -> {
 		        if(maxValue==pair.getValue()) {
@@ -58,11 +62,15 @@ public class QLearningAgent extends RLAgent{
 	}
 	
 	/**
+	 * Retourne la valeur max des actions dans l'état associé
+	 * 
+	 * @param Etat e
 	 * @return la valeur d'un etat
 	 */
 	@Override
 	public double getValeur(Etat e) {
 		
+		//Si l'action n'est pas connu dans l'état, retourne 0
 		if(!this.Q_Values.containsKey(e))
 			return 0.0;
 		
@@ -74,21 +82,29 @@ public class QLearningAgent extends RLAgent{
 	}
 
 	/**
+	 * Retourne la Q valeur pour un état donné et une action donnée
 	 * 
-	 * @param e
-	 * @param a
+	 * @param Etat e
+	 * @param Action a
 	 * @return Q valeur du couple (e,a)
 	 */
 	@Override
 	public double getQValeur(Etat e, Action a) {
-		if(!this.Q_Values.containsKey(e) || !this.Q_Values.get(e).containsKey(a))
+		
+		//Si valeur inconnu, retourne 0
+		if(!this.Q_Values.containsKey(e) 
+		|| !this.Q_Values.get(e).containsKey(a))
 			return 0.0;
 		
 		return this.Q_Values.get(e).get(a);
 	}
 	
 	/**
-	 * setter sur Q-valeur
+	 * Setter sur Q-valeur
+	 * 
+	 * @param Etat e
+	 * @param Action a
+	 * @param double d
 	 */
 	@Override
 	public void setQValeur(Etat e, Action a, double d) {
@@ -97,11 +113,10 @@ public class QLearningAgent extends RLAgent{
 		if(this.Q_Values.containsKey(e)) {
 			temp = this.Q_Values.get(e);
 		}
-		
 		temp.put(a, d);
 		this.Q_Values.put(e, temp);
 		
-		//mise a jour vmin et vmax pour affichage gradient de couleur
+		//Mise a jour vmin et vmax pour affichage gradient de couleur
     	vmax = Math.max(d, vmax);
     	vmin = Math.min(d, vmin);
 		
@@ -110,9 +125,11 @@ public class QLearningAgent extends RLAgent{
 	
 	
 	/**
-	 *
-	 * mise a jour de la Q-valeur du couple (e,a) apres chaque interaction <etat e,action a, etatsuivant esuivant, recompense reward>
-	 * la mise a jour s'effectue lorsque l'agent est notifie par l'environnement apres avoir realise une action.
+	 * Mise a jour de la Q-valeur du couple (e,a) après chaque interaction 
+	 * <etat e, action a, etatsuivant esuivant, recompense reward>
+	 * La mise à jour s'effectue lorsque l'agent est notifie par 
+	 * l'environnement après avoir réalisé une action.
+	 * 
 	 * @param e
 	 * @param a
 	 * @param esuivant
@@ -121,11 +138,15 @@ public class QLearningAgent extends RLAgent{
 	@Override
 	public void endStep(Etat e, Action a, Etat esuivant, double reward) {
 		
-		Double meilleur = this.getValeur(esuivant);
-		Double valeur = (1-this.alpha)*this.getQValeur(e,a)+this.alpha*(reward+this.gamma*meilleur);
+		Double valeur = (1-this.alpha)*this.getQValeur(e,a)+this.alpha*(reward+this.gamma*this.getValeur(esuivant));
 		this.setQValeur(e, a, valeur);
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param e
+	 */
 	@Override
 	public Action getAction(Etat e) {
 		this.actionChoisie = this.stratExplorationCourante.getAction(e);
@@ -133,12 +154,11 @@ public class QLearningAgent extends RLAgent{
 	}
 
 	/**
-	 * reinitialise les Q valeurs
+	 * Réinitialise les Q valeurs, vmin, vmax
 	 */
 	@Override
 	public void reset() {
 		super.reset();
-		this.episodeNb = 0;
 
 		this.vmax = Integer.MIN_VALUE;
         this.vmin = Integer.MAX_VALUE;
