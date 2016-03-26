@@ -9,7 +9,8 @@ import environnement.Action;
 import environnement.Etat;
 
 /**
- * Strategie qui renvoit une action aleatoire avec probabilite epsilon, une action gloutonne (qui suit la politique de l'agent) sinon
+ * Strategie qui renvoit une action aleatoire avec probabilite epsilon, 
+ * une action gloutonne (qui suit la politique de l'agent) sinon
  * Cette classe a acces a un RLAgent par l'intermediaire de sa classe mere.
  * 
  * @author GERLAND - LETOURNEUR
