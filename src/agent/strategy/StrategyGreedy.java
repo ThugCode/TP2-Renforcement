@@ -9,7 +9,7 @@ import environnement.Action;
 import environnement.Etat;
 
 /**
- * Strategie qui renvoit une action aleatoire avec probabilite epsilon, 
+ * Strategie qui renvoit une action aleatoire avec probabilité epsilon, 
  * une action gloutonne (qui suit la politique de l'agent) sinon
  * Cette classe a acces a un RLAgent par l'intermediaire de sa classe mere.
  * 
@@ -40,18 +40,27 @@ public class StrategyGreedy extends StrategyExploration{
 	@Override
 	public Action getAction(Etat _e) {
 		
+		List<Action> actions = null;
+		
+		//Retourne null si l'état est absorbant
+		if(this.getAgent().getEnv().estAbsorbant())
+			return null;
+		
 		//Si le random < epsilon, on agit aléatoirement
 		if(rand.nextDouble() < epsilon) {
-			List<Action> actions = this.getAgent().getActionsLegales(_e);
+			actions = this.getAgent().getActionsLegales(_e);
 			if(actions.size() <= 0) return null;
 			return actions.get(rand.nextInt(actions.size()));
 		}
 		
 		//Sinon on suit la politique
-		ArrayList<Action> liste = (ArrayList<Action>) this.agent.getPolitique(_e);
-		if(liste.size() <= 0) return null;
-		int i = rand.nextInt(liste.size());
-        return liste.get(i);
+		actions = this.agent.getPolitique(_e);
+		if(actions.size() <= 0) {
+			actions = this.getAgent().getActionsLegales(_e);
+			return actions.get(rand.nextInt(actions.size()));
+		}
+		int i = rand.nextInt(actions.size());
+        return actions.get(i);
 	}
 
 	/**
