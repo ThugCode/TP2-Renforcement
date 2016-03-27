@@ -47,12 +47,12 @@ public class QLearningAgent extends RLAgent{
 		//Récupération de la valeur maximum
 		Double maxValue = this.getValeur(e);
 		
-		//Parcours de actions de l'état, si la valeur de l'action 
+		//Parcours des actions de l'état, si la valeur de l'action 
 		//est égale à la valeur max, on ajoute l'action à la liste
 		HashMap <Action, Double> actions = this.Q_Values.get(e);
 	    if(actions != null) {
 	    	actions.entrySet().stream().forEach((pair) -> {
-		        if(maxValue==pair.getValue()) {
+		        if(maxValue.equals(pair.getValue())) {
 		        	liste.add(pair.getKey());
 		        }
 	    	});
@@ -74,7 +74,7 @@ public class QLearningAgent extends RLAgent{
 		if(!this.Q_Values.containsKey(e))
 			return 0.0;
 		
-		Double max = Double.MIN_VALUE;
+		Double max = 0.0;
 		for(Entry<Action, Double> ad : this.Q_Values.get(e).entrySet()) {
 			max = Math.max(max, ad.getValue());
 		}
@@ -160,8 +160,8 @@ public class QLearningAgent extends RLAgent{
 	public void reset() {
 		super.reset();
 
-		this.vmax = Integer.MIN_VALUE;
-        this.vmin = Integer.MAX_VALUE;
+		this.vmax = Double.MIN_VALUE;
+        this.vmin = Double.MAX_VALUE;
 		this.Q_Values = new HashMap<Etat, HashMap<Action, Double>>();
 		
 		this.notifyObs();
