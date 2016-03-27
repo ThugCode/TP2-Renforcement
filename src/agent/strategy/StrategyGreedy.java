@@ -45,19 +45,15 @@ public class StrategyGreedy extends StrategyExploration{
 		if(this.getAgent().getEnv().estAbsorbant())
 			return null;
 		
-		//Si le random < epsilon
-		//ou si la politique pour l'état est null, 
-		//on agit aléatoirement
-		if(rand.nextDouble() < epsilon || this.agent.getPolitique(_e).size() <= 0) {
+		//Si le random < epsilon, on agit aléatoirement
+		if(rand.nextDouble() < epsilon) {
 			actions = this.getAgent().getActionsLegales(_e);
-			if(actions.size() <= 0) return null;
-			return actions.get(rand.nextInt(actions.size()));
+		} else { //Sinon on suit la politique
+			actions = this.agent.getPolitique(_e);
 		}
 		
-		//Sinon on suit la politique
-		actions = this.agent.getPolitique(_e);
-		int i = rand.nextInt(actions.size());
-        return actions.get(i);
+		if(actions.size() <= 0) return null;
+		return actions.get(rand.nextInt(actions.size()));
 	}
 
 	/**
